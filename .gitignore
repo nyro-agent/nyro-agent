@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+config.json
+*.tgz
+.DS_Store
+
+# X content kit (videos, PNGs, Remotion source): kept local, not in the repo or the npm package
+konten-x/

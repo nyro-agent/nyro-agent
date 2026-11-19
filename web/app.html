@@ -1,0 +1,469 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nyro App</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='13' fill='%23d6aa50'/%3E%3Cpath transform='translate(4.16 4.16) scale(.82)' fill='%233a2a0b' d='M10.725 5.902 L8.266 5.902 L3.0 18.098 L5.781 18.098 L9.842 8.817 L13.92 13.159 L14.958 10.666ZM13.275 18.098 L15.734 18.098 L21.0 5.902 L18.219 5.902 L14.158 15.183 L10.08 10.841 L9.042 13.334Z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://api.fontshare.com">
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap">
+<style>
+  :root {
+    --bg: #050505; --panel: #0b0b0b; --panel-2: #080808; --line: #1a1a1a; --line-2: #242424;
+    --text: #f4f4f4; --body: #c9c9c9; --muted: #7a7a7a; --accent: #7b70f0;
+    --gold: #d6aa50; --gold-soft: #e9c77b; --green: #3ecf8e; --green-soft: #8fe3b8; --blue: #7fb6ff; --red: #ff7a7a;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); }
+  body { font-family: "Satoshi", "Inter", system-ui, -apple-system, sans-serif; color: var(--text); -webkit-font-smoothing: antialiased; min-height: 100vh; }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  code, .mono { font-family: var(--mono); }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+
+  .bar { position: sticky; top: 0; z-index: 10; background: rgba(5,5,5,.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .bar .in { max-width: 1248px; margin: 0 auto; padding: 0 24px; height: 64px; display: flex; align-items: center; gap: 20px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 15.5px; color: var(--text); text-decoration: none; white-space: nowrap; }
+  .brand svg { width: 26px; height: 26px; }
+  .tabs { display: flex; gap: 4px; padding: 4px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); overflow-x: auto; }
+  .tab { border: 0; background: transparent; padding: 7px 14px; border-radius: 8px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; white-space: nowrap; }
+  .tab[aria-selected="true"] { background: #171717; color: var(--text); }
+  .status { margin-left: auto; display: flex; gap: 8px; }
+  .chip { font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 999px; border: 1px solid var(--line-2); color: var(--body); white-space: nowrap; }
+  .chip i { display: inline-block; width: 7px; height: 7px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; background: var(--muted); }
+  .chip.ok i { background: var(--green); } .chip.err i { background: var(--red); }
+  .chip.demo { color: var(--gold-soft); border-color: rgba(214,170,80,.35); background: rgba(214,170,80,.08); }
+
+  main { max-width: 1248px; margin: 0 auto; padding: 28px 24px 64px; }
+  h2 { font-size: 15px; font-weight: 700; } .sub { font-size: 13px; color: var(--muted); }
+  .btn { display: inline-flex; align-items: center; gap: 8px; border: 1px solid var(--line-2); background: #111; padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 700; cursor: pointer; white-space: nowrap; }
+  .btn:hover:not(:disabled) { background: #161616; } .btn:disabled { opacity: .45; cursor: not-allowed; }
+  .btn-gold { border: 0; background: linear-gradient(180deg, #f1d48d, #c99a45); color: #1a1205; }
+  .btn-gold:hover:not(:disabled) { background: linear-gradient(180deg, #f5dc9d, #d0a24e); }
+  .btn-sm { padding: 6px 10px; font-size: 12.5px; border-radius: 8px; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; }
+  .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .banner { margin-bottom: 12px; display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 12px; border: 1px solid rgba(214,170,80,.35); background: rgba(214,170,80,.06); font-size: 14px; flex-wrap: wrap; }
+  .banner .grow { flex: 1 1 320px; color: var(--body); } .banner b { color: var(--text); }
+
+  .summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .stat { padding: 20px; }
+  .stat .label { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+  .stat .value { margin-top: 10px; font-size: 30px; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .stat .note { margin-top: 6px; font-size: 13px; color: var(--body); }
+  .up { color: var(--green-soft); }
+  .chains { margin-top: 12px; display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+  .chain { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 12px; background: var(--panel); border: 1px solid var(--line); }
+  .chain img, .chain .ph { width: 28px; height: 28px; border-radius: 50%; flex: none; }
+  .chain b { display: block; font-size: 14px; text-transform: capitalize; } .chain small { display: block; font-size: 12.5px; color: var(--body); font-variant-numeric: tabular-nums; }
+  .chain small em { font-style: normal; color: var(--green-soft); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 12px 20px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  tbody tr:last-child td { border-bottom: 0; }
+  thead th { font-size: 11.5px; font-weight: 700; color: var(--muted); letter-spacing: .05em; text-transform: uppercase; }
+  td { color: var(--body); font-variant-numeric: tabular-nums; } td.num, th.num { text-align: right; }
+  .asset { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 700; }
+  .asset img, .asset .ph, .ph { width: 22px; height: 22px; border-radius: 50%; flex: none; }
+  .ph { display: grid; place-items: center; background: #1a1a1a; font-size: 9.5px; color: var(--gold-soft); font-weight: 700; }
+  .scroll { overflow-x: auto; }
+  .warn { padding: 12px 20px; font-size: 13px; color: #f0b35a; border-top: 1px solid var(--line); }
+  .mt { margin-top: 16px; }
+
+  .totals { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid var(--line); }
+  .totals div { padding: 16px 20px; border-right: 1px solid var(--line); } .totals div:last-child { border-right: 0; }
+  .totals span { display: block; font-size: 11.5px; color: var(--muted); font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+  .totals b { display: block; margin-top: 6px; font-size: 20px; font-variant-numeric: tabular-nums; }
+  .dec { font-size: 11.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; white-space: nowrap; }
+  .dec.harvest { color: var(--green-soft); background: rgba(62,207,142,.1); border: 1px solid rgba(62,207,142,.3); }
+  .dec.hold { color: #f0b35a; background: rgba(240,179,90,.08); border: 1px solid rgba(240,179,90,.3); }
+  .dec.deposit { color: var(--gold-soft); background: rgba(214,170,80,.12); border: 1px solid rgba(214,170,80,.3); }
+  .dec.allocate { color: #b7adff; background: rgba(123,112,240,.1); border: 1px solid rgba(123,112,240,.3); }
+  td.detail { white-space: normal; min-width: 280px; color: var(--text); } td.detail small { display: block; margin-top: 3px; font-size: 12px; color: var(--muted); }
+  .notes { padding: 14px 20px; border-top: 1px solid var(--line); display: grid; gap: 6px; font-size: 13px; color: var(--body); }
+  .empty { padding: 28px 20px; font-size: 14px; color: var(--muted); }
+  .timer { font-family: var(--mono); font-size: 13px; color: var(--muted); }
+  .txbox { padding: 16px 20px; border-top: 1px solid var(--line); background: #070707; }
+  .txbox pre { margin-top: 10px; max-height: 280px; overflow: auto; font-family: var(--mono); font-size: 12px; line-height: 1.6; color: var(--body); white-space: pre-wrap; word-break: break-all; }
+  .txbox .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+  .set-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: start; }
+  .wide { grid-column: 1 / -1; }
+  .form { padding: 18px 20px 20px; display: grid; gap: 12px; }
+  .lbl { font-size: 14px; font-weight: 700; } .lbl small { display: block; font-size: 12px; color: var(--muted); font-weight: 500; margin-top: 2px; }
+  textarea, .form input, select { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--panel-2); font-family: var(--mono); font-size: 13px; color: var(--text); resize: vertical; }
+  select { font-family: inherit; }
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .safe { font-size: 12.5px; line-height: 1.55; color: var(--muted); }
+  .msg { font-size: 13px; min-height: 18px; } .msg.err { color: var(--red); } .msg.ok { color: var(--green-soft); }
+  .mode-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .mode-opt { text-align: left; padding: 16px 18px; border-radius: 12px; border: 1px solid var(--line-2); background: var(--panel-2); cursor: pointer; }
+  .mode-opt b { display: block; font-size: 15px; } .mode-opt small { display: block; margin-top: 4px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .mode-opt[aria-checked="true"] { border-color: rgba(214,170,80,.55); background: rgba(214,170,80,.07); }
+
+  .term { background: #060606; border: 1px solid var(--line); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; height: calc(100vh - 64px - 28px - 64px); min-height: 420px; }
+  .term-head { display: flex; align-items: center; gap: 14px; padding: 12px 18px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .dots { display: flex; gap: 6px; } .dots i { width: 10px; height: 10px; border-radius: 50%; background: #262626; }
+  .term-out { flex: 1; overflow-y: auto; padding: 18px 20px; font-family: var(--mono); font-size: 13.5px; line-height: 1.65; color: var(--body); white-space: pre-wrap; word-break: break-word; }
+  .term-out .cmd { color: var(--text); } .term-out .cmd::before { content: "nyro › "; color: var(--gold); }
+  .term-out .err { color: var(--red); } .term-out .ok { color: var(--green-soft); } .term-out .dim { color: var(--muted); } .term-out .hl { color: var(--gold-soft); }
+  .term-in { display: flex; align-items: center; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 14px; }
+  .term-in span { color: var(--gold); white-space: nowrap; }
+  .term-in input { flex: 1; min-width: 0; background: transparent; border: 0; outline: none; font-family: var(--mono); font-size: 14px; color: var(--text); }
+  .quick { display: flex; gap: 8px; flex-wrap: wrap; padding: 0 20px 14px; }
+  .quick button { font-family: var(--mono); font-size: 12.5px; padding: 6px 10px; border-radius: 8px; border: 1px solid var(--line-2); background: #0e0e0e; color: var(--body); cursor: pointer; }
+
+  .offline { max-width: 640px; margin: 80px auto; padding: 32px; }
+  .offline h1 { font-size: 26px; } .offline p { margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--body); }
+  .offline pre { margin-top: 16px; padding: 14px 16px; border-radius: 10px; background: var(--panel-2); border: 1px solid var(--line); font-family: var(--mono); font-size: 13.5px; }
+  .offline .row { margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap; } .offline input { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line-2); background: var(--panel-2); font-family: var(--mono); }
+
+  @media (max-width: 1000px) { .summary { grid-template-columns: 1fr 1fr; } .set-grid { grid-template-columns: 1fr; } .totals { grid-template-columns: 1fr 1fr; } .totals div:nth-child(2) { border-right: 0; } }
+  @media (max-width: 640px) {
+    .bar .in { padding: 0 16px; gap: 10px; } .brand span, .status .chip:not(.demo) { display: none; }
+    main { padding: 20px 16px 48px; } .summary, .two, .mode-switch { grid-template-columns: 1fr; } th, td { padding: 10px 14px; }
+  }
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="in">
+    <a class="brand" href="#dashboard" aria-label="Nyro app">
+      <svg viewBox="0 0 28 28" aria-hidden="true"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6dc96"/><stop offset=".55" stop-color="#d6aa50"/><stop offset="1" stop-color="#8a6420"/></linearGradient></defs><circle cx="14" cy="14" r="13" fill="url(#g)"/><circle cx="14" cy="14" r="10.4" fill="none" stroke="#5c4212" stroke-opacity=".55" stroke-width="1.1"/><path transform="translate(4.16 4.16) scale(.82)" fill="#3a2a0b" d="M10.725 5.902 L8.266 5.902 L3.0 18.098 L5.781 18.098 L9.842 8.817 L13.92 13.159 L14.958 10.666ZM13.275 18.098 L15.734 18.098 L21.0 5.902 L18.219 5.902 L14.158 15.183 L10.08 10.841 L9.042 13.334Z"/></svg>
+      <span>Nyro</span>
+    </a>
+    <div class="tabs" role="tablist" aria-label="View">
+      <button class="tab" role="tab" id="tab-dashboard" aria-controls="view-dashboard" aria-selected="true">Dashboard</button>
+      <button class="tab" role="tab" id="tab-harvest" aria-controls="view-harvest" aria-selected="false">Harvest</button>
+      <button class="tab" role="tab" id="tab-terminal" aria-controls="view-terminal" aria-selected="false">Terminal</button>
+      <button class="tab" role="tab" id="tab-settings" aria-controls="view-settings" aria-selected="false">Settings</button>
+    </div>
+    <div class="status" id="status" aria-live="polite"></div>
+  </div>
+</header>
+
+<main>
+  <section id="view-offline" hidden>
+    <div class="card offline">
+      <h1 id="off-title">The engine is not running</h1>
+      <p id="off-text">This app talks to the Nyro engine on your computer. Start it, then try again.</p>
+      <pre id="off-cmd">npx -y nyro-agent web</pre>
+      <form class="row" id="off-token" hidden><input id="token-input" type="password" placeholder="Access token" autocomplete="off" aria-label="Access token"><button class="btn btn-gold" type="submit">Connect</button></form>
+      <div class="row"><button class="btn" id="retry">Try again</button></div>
+    </div>
+  </section>
+
+  <section id="view-dashboard" role="tabpanel" aria-labelledby="tab-dashboard">
+    <div class="banner" id="demo-banner" hidden><span class="grow"><b>You are looking at demo wallets.</b> Add your mining payout addresses to see what you really earned.</span><button class="btn btn-gold" data-goto="settings">Add wallets</button></div>
+    <div class="summary" id="summary"></div>
+    <div class="chains" id="chains" aria-label="Balance per chain"></div>
+    <div class="card mt">
+      <div class="card-head"><div><h2>Mined balances</h2><p class="sub" id="scan-sub">Every payout wallet, priced in USD</p></div><div style="display:flex;gap:8px"><button class="btn" id="rescan">Scan again</button><button class="btn btn-gold" data-goto="harvest" data-plan="1">Plan harvest</button></div></div>
+      <div class="scroll"><table><thead><tr><th scope="col">Asset</th><th scope="col">Chain</th><th scope="col">Wallet</th><th scope="col" class="num">Amount</th><th scope="col" class="num">New</th><th scope="col" class="num">Value</th></tr></thead><tbody id="earnings"></tbody></table></div>
+      <div id="warnings"></div>
+    </div>
+  </section>
+
+  <section id="view-harvest" role="tabpanel" aria-labelledby="tab-harvest" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div><h2>Harvest plan</h2><p class="sub" id="plan-sub">Live LI.FI routes into USDC. Nothing is sent: you sign each step in your own wallet.</p></div>
+        <div style="display:flex;gap:10px;align-items:center"><span class="timer" id="timer"></span><button class="btn btn-gold" id="plan-btn">Plan harvest</button></div>
+      </div>
+      <div id="plan"><p class="empty">Build a plan to see, for every mined token, whether moving it is worth the gas and fees.</p></div>
+    </div>
+  </section>
+
+  <section id="view-settings" role="tabpanel" aria-labelledby="tab-settings" hidden>
+    <div class="set-grid">
+      <form class="card" id="wallets-form" novalidate>
+        <div class="card-head"><div><h2>1 · Mining payout wallets</h2><p class="sub">Public addresses only, one per line. Everything in them counts as mined.</p></div></div>
+        <div class="form">
+          <label class="lbl" for="w-evm">EVM <small>Read on Ethereum, Base, Arbitrum and Polygon (0x…)</small></label><textarea id="w-evm" rows="2" spellcheck="false" placeholder="0x…"></textarea>
+          <label class="lbl" for="w-sol">Solana <small>SOL plus priced SPL tokens, e.g. DePIN rewards like GRASS</small></label><textarea id="w-sol" rows="2" spellcheck="false"></textarea>
+          <label class="lbl" for="w-kas">Kaspa <small>GPU / ASIC pool payouts (kaspa:…)</small></label><textarea id="w-kas" rows="2" spellcheck="false" placeholder="kaspa:…"></textarea>
+          <label class="lbl" for="w-btc">Bitcoin <small>Pool payouts (bc1… / 1… / 3…)</small></label><textarea id="w-btc" rows="2" spellcheck="false" placeholder="bc1…"></textarea>
+          <p class="safe">Never paste a private key or seed phrase. Anything that looks like one is refused.</p>
+          <button class="btn btn-gold" type="submit">Save wallets</button><p class="msg" id="w-msg" role="status"></p>
+        </div>
+      </form>
+
+      <form class="card" id="payout-form" novalidate>
+        <div class="card-head"><div><h2>2 · Payout to Robinhood</h2><p class="sub">Where the USDC is collected and which Robinhood addresses to finish at.</p></div></div>
+        <div class="form">
+          <label class="lbl" for="p-chain">Consolidate into USDC on</label><select id="p-chain"></select>
+          <label class="lbl" for="p-collect">Your collect wallet <small id="p-collect-hint">Your own wallet on that chain. Empty = your first wallet of that type.</small></label><input id="p-collect" spellcheck="false" autocomplete="off">
+          <label class="lbl" for="p-usdc">Robinhood USDC deposit address <small>Copy it from Robinhood → Crypto → USDC → Receive, on the same network</small></label><input id="p-usdc" spellcheck="false" autocomplete="off">
+          <label class="lbl" for="p-btc">Robinhood BTC deposit address <small>Optional. BTC payouts go straight here.</small></label><input id="p-btc" spellcheck="false" autocomplete="off">
+          <p class="safe">Check in the Robinhood app which networks it accepts for each coin before sending. Sending on the wrong network can lose the funds.</p>
+          <button class="btn btn-gold" type="submit">Save payout</button><p class="msg" id="p-msg" role="status"></p>
+        </div>
+      </form>
+
+      <form class="card" id="rules-form" novalidate>
+        <div class="card-head"><div><h2>3 · Harvest rules</h2><p class="sub">When moving a token is worth it.</p></div></div>
+        <div class="form">
+          <div class="two">
+            <label class="lbl" for="r-min">Minimum value ($)<input id="r-min" type="number" min="0" step="1" inputmode="decimal"></label>
+            <label class="lbl" for="r-cost">Max route cost (%)<input id="r-cost" type="number" min="0.1" max="50" step="0.1" inputmode="decimal"></label>
+            <label class="lbl" for="r-slip">Slippage (%)<input id="r-slip" type="number" min="0.05" max="5" step="0.05" inputmode="decimal"></label>
+            <label class="lbl" for="r-gas">Keep for gas ($ per chain)<input id="r-gas" type="number" min="0" step="0.5" inputmode="decimal"></label>
+          </div>
+          <label class="lbl" for="r-alloc">Split in Robinhood <small>One per line, e.g. "NVDA 70". Must add up to 100. You place these orders yourself.</small></label><textarea id="r-alloc" rows="3" spellcheck="false"></textarea>
+          <button class="btn btn-gold" type="submit">Save rules</button><p class="msg" id="r-msg" role="status"></p>
+        </div>
+      </form>
+
+      <div class="card">
+        <div class="card-head"><div><h2>4 · Mode</h2><p class="sub" id="cfg-path"></p></div></div>
+        <div class="form">
+          <div class="mode-switch" role="radiogroup" aria-label="Data mode">
+            <button class="mode-opt" role="radio" id="m-demo" aria-checked="true" type="button"><b>Demo</b><small>Sample rig, node and staking wallets. Estimated costs.</small></button>
+            <button class="mode-opt" role="radio" id="m-live" aria-checked="false" type="button"><b>Live</b><small>Your wallets, live prices and live LI.FI quotes.</small></button>
+          </div>
+          <p class="msg" id="m-msg" role="status"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-terminal" role="tabpanel" aria-labelledby="tab-terminal" hidden>
+    <div class="term">
+      <div class="term-head"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span><span>nyro terminal · type <b class="mono">help</b></span></div>
+      <div class="term-out" id="term-out" role="log" aria-live="polite"></div>
+      <div class="quick" aria-label="Quick commands"><button data-cmd="scan">scan</button><button data-cmd="plan">plan</button><button data-cmd="rules">rules</button><button data-cmd="help">help</button><button data-cmd="clear">clear</button></div>
+      <form class="term-in" id="term-form"><span aria-hidden="true">nyro ›</span><input id="term-input" autocomplete="off" spellcheck="false" aria-label="Command"></form>
+    </div>
+  </section>
+</main>
+
+<script>
+(() => {
+  const store = { get(k) { try { return sessionStorage.getItem(k); } catch { return null; } }, set(k, v) { try { sessionStorage.setItem(k, v); } catch {} } };
+  let token = store.get("nyro-token") || "";
+  async function call(method, path, body) {
+    const headers = { "X-Nyro": "1" };
+    if (body !== undefined) headers["content-type"] = "application/json";
+    if (token) headers.authorization = `Bearer ${token}`;
+    let res;
+    try { res = await fetch(path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) }); }
+    catch { throw Object.assign(new Error("The engine is not reachable."), { offline: true }); }
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw Object.assign(new Error(data.error || `HTTP ${res.status}`), { status: res.status });
+    return data;
+  }
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const usd = (n) => "$" + Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const usd0 = (n) => "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  const amt = (n) => Number(n).toLocaleString("en-US", { maximumFractionDigits: 6 });
+  const short = (a) => (a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a);
+  const CHAIN_LOGO = { solana: "solana", ethereum: "ethereum", base: "base", arbitrum: "arbitrum", polygon: "polygon", kaspa: "kaspa", bitcoin: "bitcoin" };
+  const ASSET_LOGO = { SOL: "solana", ETH: "ethereum", USDC: "usdc", KAS: "kaspa", BTC: "bitcoin", POL: "pol", TAO: "tao" };
+  const logo = (file, label) => file ? `<img src="assets/chains/${file}.svg" alt="">` : `<span class="ph" aria-hidden="true">${esc(label.slice(0, 3))}</span>`;
+  let state = { settings: null, scan: null, plan: null, expiresAt: 0 };
+
+  // ---------- views
+  const VIEWS = ["dashboard", "harvest", "terminal", "settings"];
+  function show(view) {
+    $("view-offline").hidden = view !== "offline";
+    for (const v of VIEWS) { $(`view-${v}`).hidden = v !== view; $(`tab-${v}`).setAttribute("aria-selected", String(v === view)); }
+    if (view === "terminal") setTimeout(() => $("term-input").focus(), 0);
+  }
+  const route = () => (VIEWS.includes(location.hash.slice(1)) ? location.hash.slice(1) : "dashboard");
+  for (const v of VIEWS) $(`tab-${v}`).onclick = () => { history.replaceState(null, "", `#${v}`); show(v); };
+  addEventListener("hashchange", () => state.settings && show(route()));
+  document.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-goto]"); if (!b) return;
+    $(`tab-${b.dataset.goto}`).click();
+    if (b.dataset.plan) makePlan().catch(() => {});
+  });
+
+  function offline(err) {
+    const t = err.status === 401;
+    $("off-title").textContent = t ? "This engine needs an access token" : "The engine is not running";
+    $("off-text").textContent = t ? "It was started on a network address, so every request needs the NYRO_WEB_TOKEN value." : "This app talks to the Nyro engine on your computer. Start it, then try again.";
+    $("off-cmd").hidden = t; $("off-token").hidden = !t;
+    $("status").innerHTML = `<span class="chip err"><i></i>Offline</span>`;
+    show("offline");
+  }
+  $("retry").onclick = () => boot();
+  $("off-token").onsubmit = (e) => { e.preventDefault(); token = $("token-input").value.trim(); store.set("nyro-token", token); boot(); };
+
+  // ---------- settings
+  function renderSettings(s) {
+    state.settings = s;
+    $("status").innerHTML = (s.demo ? `<span class="chip demo">DEMO · sample wallets</span>` : `<span class="chip ok"><i></i>Live wallets</span>`) +
+      `<span class="chip">Payout USDC on ${esc(s.payout.chain)}</span>`;
+    $("demo-banner").hidden = !s.demo;
+    const lines = (a) => a.join("\n");
+    $("w-evm").value = lines(s.wallets.evm); $("w-sol").value = lines(s.wallets.solana); $("w-kas").value = lines(s.wallets.kaspa); $("w-btc").value = lines(s.wallets.bitcoin);
+    $("p-chain").innerHTML = s.payoutChains.map((c) => `<option value="${c}" ${c === s.payout.chain ? "selected" : ""}>${c[0].toUpperCase() + c.slice(1)}</option>`).join("");
+    $("p-collect").value = s.payout.collectWallet; $("p-usdc").value = s.payout.robinhood.USDC; $("p-btc").value = s.payout.robinhood.BTC;
+    hintCollect();
+    $("r-min").value = s.rules.minHarvestUsd; $("r-cost").value = s.rules.maxCostPct; $("r-slip").value = s.rules.slippagePct; $("r-gas").value = s.rules.keepGasUsd;
+    $("r-alloc").value = s.allocation.map((a) => `${a.symbol} ${a.pct}`).join("\n");
+    $("m-demo").setAttribute("aria-checked", String(s.demo)); $("m-live").setAttribute("aria-checked", String(!s.demo));
+    $("cfg-path").textContent = `Saved to ${s.configPath}${s.configExists ? "" : " (created on first save)"}`;
+    if (s.forcedDemo) { $("m-msg").className = "msg err"; $("m-msg").textContent = "NYRO_DEMO=1 is set where the engine runs, so it stays in demo mode."; }
+  }
+  const hintCollect = () => { $("p-collect").placeholder = $("p-chain").value === "solana" ? "Solana address" : "0x… address"; $("p-usdc").placeholder = $("p-chain").value === "solana" ? "Solana address from Robinhood" : "0x… address from Robinhood"; };
+  $("p-chain").addEventListener("change", hintCollect);
+  const split = (id) => $(id).value.split(/[\n,]+/).map((x) => x.trim()).filter(Boolean);
+  async function save(body, msgId, okText) {
+    const m = $(msgId); m.className = "msg"; m.textContent = "Saving…";
+    try { renderSettings(await call("POST", "/api/settings", body)); m.className = "msg ok"; m.textContent = okText; clearPlan("Settings changed. Build a new plan."); await scan(); }
+    catch (err) { m.className = "msg err"; m.textContent = err.message; }
+  }
+  $("wallets-form").onsubmit = (e) => { e.preventDefault(); save({ wallets: { evm: split("w-evm"), solana: split("w-sol"), kaspa: split("w-kas"), bitcoin: split("w-btc") } }, "w-msg", "Saved."); };
+  $("payout-form").onsubmit = (e) => { e.preventDefault(); save({ payout: { chain: $("p-chain").value, collectWallet: $("p-collect").value, robinhood: { USDC: $("p-usdc").value, BTC: $("p-btc").value } } }, "p-msg", "Saved."); };
+  $("rules-form").onsubmit = (e) => {
+    e.preventDefault();
+    const allocation = $("r-alloc").value.split("\n").map((l) => l.trim()).filter(Boolean).map((l) => { const [symbol, pct] = l.split(/[\s:=]+/); return { symbol, pct: Number(pct) }; });
+    save({ rules: { minHarvestUsd: +$("r-min").value, maxCostPct: +$("r-cost").value, slippagePct: +$("r-slip").value, keepGasUsd: +$("r-gas").value }, allocation }, "r-msg", "Saved.");
+  };
+  $("m-demo").onclick = () => save({ demo: true }, "m-msg", "Demo mode: sample wallets.");
+  $("m-live").onclick = () => save({ demo: false }, "m-msg", "Live mode: reading your wallets.");
+
+  // ---------- scan
+  function renderScan(s) {
+    state.scan = s;
+    const since = s.previousAt ? new Date(s.previousAt).toLocaleString() : "first scan";
+    const chains = Object.keys(s.byChain);
+    $("summary").innerHTML = [
+      ["Mined balance", usd0(s.totalUsd), `${s.earnings.length} assets · ${s.demo ? "demo" : "live"} prices`],
+      ["New since last scan", `<span class="up">+${usd0(s.newUsd)}</span>`, `since ${esc(since)}`],
+      ["Chains earning", String(chains.length), chains.join(", ") || "none yet"],
+      ["Payout", `USDC`, `on ${esc(state.settings?.payout.chain || "")}`],
+    ].map(([l, v, n]) => `<div class="card stat"><p class="label">${l}</p><p class="value">${v}</p><p class="note">${n}</p></div>`).join("");
+    $("chains").innerHTML = Object.entries(s.byChain).sort((a, b) => b[1].usd - a[1].usd).map(([c, v]) =>
+      `<div class="chain">${logo(CHAIN_LOGO[c], c)}<div><b>${esc(c)}</b><small>${usd0(v.usd)}${v.newUsd >= 0.5 ? ` · <em>+${usd0(v.newUsd)}</em>` : ""}</small></div></div>`).join("");
+    $("scan-sub").textContent = `Scanned ${new Date(s.at).toLocaleTimeString()} · every payout wallet, priced in USD`;
+    $("earnings").innerHTML = s.earnings.length ? s.earnings.map((e) =>
+      `<tr><td><span class="asset">${logo(ASSET_LOGO[e.symbol], e.symbol)}${esc(e.symbol)}</span></td><td style="text-transform:capitalize">${esc(e.chain)}</td><td class="mono">${esc(short(e.wallet))}</td><td class="num">${amt(e.amount)}</td><td class="num">${e.newAmount ? `<span class="up">+${amt(e.newAmount)}</span>` : "–"}</td><td class="num">${usd(e.usd)}</td></tr>`).join("")
+      : `<tr><td colspan="6">Nothing found yet. Add your payout wallets in Settings.</td></tr>`;
+    $("warnings").innerHTML = s.warnings.map((w) => `<p class="warn">⚠ ${esc(w)}</p>`).join("");
+  }
+  async function scan() { $("rescan").disabled = true; try { renderScan(await call("GET", "/api/scan")); } finally { $("rescan").disabled = false; } }
+  $("rescan").onclick = () => scan().catch((e) => (e.offline || e.status === 401 ? offline(e) : null));
+
+  // ---------- plan
+  let timer = 0;
+  function clearPlan(text) { state.plan = null; clearInterval(timer); $("timer").textContent = ""; $("plan").innerHTML = `<p class="empty">${esc(text)}</p>`; }
+  function badge(l) {
+    if (l.decision === "hold") return `<span class="dec hold">Hold</span>`;
+    if (l.step === "deposit") return `<span class="dec deposit">Deposit</span>`;
+    if (l.step === "allocate") return `<span class="dec allocate">Robinhood</span>`;
+    return `<span class="dec harvest">Harvest</span>`;
+  }
+  const WHO = { "wallet-sign": "You sign in wallet", manual: "Manual", robinhood: "You, in Robinhood" };
+  function renderPlan(p) {
+    state.plan = p;
+    $("plan-sub").textContent = `Plan ${p.id}${p.demo ? " · demo estimates" : " · live quotes"} · USDC on ${p.payout}`;
+    $("plan").innerHTML = `<div class="totals">
+        <div><span>Harvest</span><b>${usd(p.harvestUsd)}</b></div><div><span>Route cost</span><b>${usd(p.costUsd)}</b></div>
+        <div><span>Arrives</span><b>${usd(p.netUsd)}</b></div><div><span>Held back</span><b>${usd(p.heldUsd)}</b></div></div>
+      <div class="scroll"><table><thead><tr><th scope="col">#</th><th scope="col">Step</th><th scope="col">What</th><th scope="col">Who</th><th scope="col" class="num">Value</th><th scope="col" class="num">Cost</th><th scope="col"></th></tr></thead><tbody>${
+        p.legs.map((l) => `<tr><td>${l.id}</td><td>${badge(l)}</td><td class="detail">${esc(l.detail)}${l.reason ? `<small>${esc(l.reason)}</small>` : ""}</td><td>${WHO[l.mode]}</td><td class="num">${usd(l.usd)}</td><td class="num">${l.costUsd !== undefined ? `${usd(l.costUsd)}<br><small class="sub">${l.costPct.toFixed(2)}%${l.estimated ? " est." : ""}</small>` : "–"}</td><td>${l.tx ? `<button class="btn btn-sm" data-tx="${l.id}">View tx</button>` : ""}</td></tr>`).join("")
+      }</tbody></table></div>
+      ${p.notes.length ? `<div class="notes">${p.notes.map((n) => `<p>${esc(n)}</p>`).join("")}</div>` : ""}
+      <div class="txbox" id="txbox" hidden></div>`;
+    $("plan").querySelectorAll("[data-tx]").forEach((b) => (b.onclick = () => showTx(Number(b.dataset.tx))));
+    clearInterval(timer); tick(); timer = setInterval(tick, 1000);
+  }
+  function tick() {
+    const left = Math.max(0, state.expiresAt - Date.now());
+    $("timer").textContent = left ? `quotes valid ${Math.floor(left / 60000)}:${String(Math.floor(left / 1000) % 60).padStart(2, "0")}` : "quotes expired, plan again";
+    if (!left) clearInterval(timer);
+  }
+  async function makePlan() {
+    const b = $("plan-btn"); b.disabled = true; b.textContent = "Getting quotes…";
+    $("plan").innerHTML = `<p class="empty">Checking routes and fees for every token…</p>`;
+    try { const r = await call("POST", "/api/plan", {}); state.expiresAt = r.expiresAt; renderPlan(r.plan); return r; }
+    catch (err) { clearPlan(err.message); throw err; }
+    finally { b.disabled = false; b.textContent = "Plan harvest"; }
+  }
+  $("plan-btn").onclick = () => makePlan().catch(() => {});
+  async function showTx(leg) {
+    const box = $("txbox"); box.hidden = false;
+    try {
+      const r = await call("GET", `/api/tx/${state.plan.id}/${leg}`);
+      const json = JSON.stringify(r.tx, null, 2);
+      box.innerHTML = `<div class="row"><b>Step ${leg} · unsigned transaction</b><span class="sub">Review it, then sign in your own wallet. Nyro never signs.</span><button class="btn btn-sm" id="copy-tx">Copy</button></div><pre>${esc(json)}</pre>`;
+      $("copy-tx").onclick = async () => { try { await navigator.clipboard.writeText(json); $("copy-tx").textContent = "Copied"; } catch { $("copy-tx").textContent = "Copy failed"; } };
+    } catch (err) { box.innerHTML = `<p class="msg err">${esc(err.message)}</p>`; }
+    box.scrollIntoView({ block: "nearest" });
+  }
+
+  // ---------- terminal
+  const out = $("term-out");
+  const print = (t, cls = "") => { const d = document.createElement("div"); if (cls) d.className = cls; d.textContent = t; out.appendChild(d); out.scrollTop = out.scrollHeight; };
+  const table = (rows, head) => {
+    const all = [head, ...rows]; const w = head.map((_, i) => Math.max(...all.map((r) => String(r[i]).length))); const last = w.length - 1;
+    const line = (r) => r.map((c, i) => (i === last ? String(c) : String(c).padEnd(w[i]))).join("   ");
+    return [line(head), w.map((n, i) => "─".repeat(i === last ? Math.min(n, 12) : n)).join("   "), ...rows.map(line)].join("\n");
+  };
+  const HELP = `commands
+  scan                      balances in every payout wallet, and what is new
+  plan                      harvest or hold each token, with live route costs
+  tx <plan_id> <step>       unsigned transaction for one step (you sign it)
+  rules                     harvest rules, payout and Robinhood split
+  set min <usd>             minimum value worth harvesting
+  set maxcost <pct>         hold a token if the route costs more than this
+  clear                     clear the screen`;
+  const hist = []; let hIdx = 0;
+  async function run(line) {
+    const [cmd, ...a] = line.trim().split(/\s+/); if (!cmd) return;
+    print(line, "cmd");
+    try {
+      if (cmd === "help") print(HELP, "dim");
+      else if (cmd === "clear") out.textContent = "";
+      else if (cmd === "scan") {
+        const s = await call("GET", "/api/scan"); renderScan(s);
+        print(`Mined ${usd(s.totalUsd)}${s.demo ? " (DEMO)" : ""} · new ${usd(s.newUsd)}`, "hl");
+        print(table(s.earnings.map((e) => [e.chain, e.symbol, amt(e.amount), e.newAmount ? `+${amt(e.newAmount)}` : "–", usd(e.usd)]), ["chain", "asset", "amount", "new", "value"]));
+        s.warnings.forEach((w) => print(`⚠ ${w}`, "err"));
+      } else if (cmd === "plan") {
+        const r = await makePlan(); const p = r.plan;
+        print(`Plan ${p.id}${p.demo ? " (DEMO estimates)" : ""} · harvest ${usd(p.harvestUsd)} · cost ${usd(p.costUsd)} · arrives ${usd(p.netUsd)} · held ${usd(p.heldUsd)}`, "hl");
+        print(table(p.legs.map((l) => [`#${l.id}`, l.decision === "hold" ? "HOLD" : l.step, l.chain, usd(l.usd), l.costUsd !== undefined ? `${l.costPct.toFixed(2)}%` : "–", l.detail]), ["#", "step", "chain", "value", "cost", "what"]));
+        p.notes.forEach((n) => print(n, "dim"));
+        if (p.legs.some((l) => l.tx)) print(`Unsigned transactions: tx ${p.id} <step>`, "hl");
+      } else if (cmd === "tx") {
+        const [id, leg] = a; if (!id || !leg) return print("usage: tx <plan_id> <step>", "err");
+        const r = await call("GET", `/api/tx/${encodeURIComponent(id)}/${encodeURIComponent(leg)}`);
+        print(`Step ${r.leg}: ${r.detail}\nReview and sign in your own wallet:`, "hl"); print(JSON.stringify(r.tx, null, 2));
+      } else if (cmd === "rules") {
+        const s = await call("GET", "/api/settings"); renderSettings(s);
+        print(`min ${usd(s.rules.minHarvestUsd)} · max cost ${s.rules.maxCostPct}% · slippage ${s.rules.slippagePct}% · keep ${usd(s.rules.keepGasUsd)} gas\npayout USDC on ${s.payout.chain} · Robinhood USDC ${s.payout.robinhood.USDC ? "set" : "not set"} · BTC ${s.payout.robinhood.BTC ? "set" : "not set"}\nsplit ${s.allocation.map((x) => `${x.symbol} ${x.pct}%`).join(" · ") || "none"}`);
+      } else if (cmd === "set" && (a[0] === "min" || a[0] === "maxcost")) {
+        const v = Number(a[1]); if (Number.isNaN(v)) return print(`usage: set ${a[0]} <number>`, "err");
+        const r = { ...state.settings.rules, [a[0] === "min" ? "minHarvestUsd" : "maxCostPct"]: v };
+        renderSettings(await call("POST", "/api/settings", { rules: r })); clearPlan("Rules changed. Build a new plan.");
+        print(`Saved. ${a[0] === "min" ? `minimum ${usd(v)}` : `max route cost ${v}%`}`, "ok");
+      } else print(`unknown command "${cmd}". Type help.`, "err");
+    } catch (err) { print(err.message, "err"); if (err.offline || err.status === 401) offline(err); }
+  }
+  $("term-form").onsubmit = (e) => { e.preventDefault(); const v = $("term-input").value; $("term-input").value = ""; if (v.trim()) { hist.push(v); hIdx = hist.length; } run(v); };
+  $("term-input").addEventListener("keydown", (e) => {
+    if (e.key === "ArrowUp" && hIdx > 0) { e.preventDefault(); $("term-input").value = hist[--hIdx]; }
+    if (e.key === "ArrowDown") { e.preventDefault(); hIdx = Math.min(hist.length, hIdx + 1); $("term-input").value = hist[hIdx] || ""; }
+  });
+  document.querySelectorAll(".quick button").forEach((b) => (b.onclick = () => { run(b.dataset.cmd); $("term-input").focus(); }));
+
+  async function boot() {
+    $("summary").innerHTML = Array(4).fill(`<div class="card stat"><p class="label">Loading</p><p class="value">…</p></div>`).join("");
+    try {
+      renderSettings(await call("GET", "/api/settings"));
+      show(route());
+      if (!out.childElementCount) print(`nyro ${state.settings.version} · ${state.settings.demo ? "DEMO, sample mining wallets" : "live wallets"}\nType help for commands.`, "dim");
+      await scan();
+    } catch (err) { offline(err); }
+  }
+  boot();
+})();
+</script>
+</body>
+</html>

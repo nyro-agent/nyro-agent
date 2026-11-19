@@ -1,0 +1,18 @@
+{
+  "wallets": { "evm": [], "solana": [], "kaspa": [], "bitcoin": [] },
+  "solana": { "rpc": "https://api.mainnet-beta.solana.com" },
+  "evmChains": {
+    "ethereum": { "rpc": "https://ethereum-rpc.publicnode.com", "nativeSymbol": "ETH", "nativePriceId": "coingecko:ethereum",
+      "tokens": [{ "symbol": "USDC", "address": "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", "decimals": 6 }] },
+    "base": { "rpc": "https://mainnet.base.org", "nativeSymbol": "ETH", "nativePriceId": "coingecko:ethereum",
+      "tokens": [{ "symbol": "USDC", "address": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", "decimals": 6 }] },
+    "arbitrum": { "rpc": "https://arb1.arbitrum.io/rpc", "nativeSymbol": "ETH", "nativePriceId": "coingecko:ethereum",
+      "tokens": [{ "symbol": "USDC", "address": "0xaf88d065e77c8cC2239327C5EDb3A432268e5831", "decimals": 6 }] },
+    "polygon": { "rpc": "https://polygon-bor-rpc.publicnode.com", "nativeSymbol": "POL", "nativePriceId": "coingecko:polygon-ecosystem-token",
+      "tokens": [{ "symbol": "USDC", "address": "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359", "decimals": 6 }] }
+  },
+  "payout": { "chain": "solana", "collectWallet": "", "robinhood": { "USDC": "", "BTC": "" } },
+  "rules": { "minHarvestUsd": 25, "maxCostPct": 3, "slippagePct": 0.5, "keepGasUsd": 2 },
+  "allocation": [ { "symbol": "NVDA", "pct": 70 }, { "symbol": "BTC", "pct": 30 } ],
+  "demo": true
+}

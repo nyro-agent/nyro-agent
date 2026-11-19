@@ -1,0 +1,65 @@
+{
+  "name": "nyro-agent",
+  "version": "0.1.0",
+  "description": "NYRO: an AI mining agent (MCP server + web app) that finds mining, staking and node rewards across Solana, Ethereum, Base, Arbitrum, Polygon, Kaspa and Bitcoin, checks what it costs to consolidate them into USDC, and plans the route to your Robinhood deposit address. You sign every step.",
+  "homepage": "https://nyro.run",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nyro-agent/nyro-agent.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nyro-agent/nyro-agent/issues"
+  },
+  "author": "Nyro (https://nyro.run)",
+  "type": "module",
+  "bin": {
+    "nyro-agent": "dist/index.js",
+    "nyro": "dist/index.js"
+  },
+  "main": "dist/index.js",
+  "files": [
+    "dist",
+    "web",
+    "config.example.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.18"
+  },
+  "scripts": {
+    "dev": "tsx src/index.ts",
+    "web": "tsx src/index.ts web",
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node18 --format=esm --packages=external --outfile=dist/index.js --banner:js=\"#!/usr/bin/env node\"",
+    "typecheck": "tsc --noEmit",
+    "smoke": "tsx scripts/smoke.ts",
+    "prepublishOnly": "npm run typecheck && npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "ai-agent",
+    "mining",
+    "staking",
+    "depin",
+    "solana",
+    "ethereum",
+    "base",
+    "arbitrum",
+    "polygon",
+    "kaspa",
+    "bitcoin",
+    "li.fi",
+    "robinhood"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

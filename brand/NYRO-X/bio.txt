@@ -1,0 +1,45 @@
+NYRO · X profile
+================
+
+Name
+Nyro
+
+Token
+Nyro Agent ($NYRO)
+
+Bio (pick one, each under 160 characters)
+
+1) AI mining agent. Finds your rewards on 7 chains, prices every move, and routes it all into one USDC payout. You sign every step. Never your keys.
+
+2) Mine on every chain. Collect it all in one place.
+Rig payouts, node rewards, staking dust: one USDC payout. Public addresses only.
+
+3) Your rewards are scattered on 7 chains. Nyro finds them, holds what isn't worth the fees, and routes the rest to one payout. You sign.
+
+Location
+Every chain
+
+Website
+nyro.run
+
+Avatar
+logo-profile-1000.jpg
+
+Header
+banner-1500x500.jpg (or banner-3000x1000.jpg for a sharper upload). Mirrored so the avatar covers nothing.
+
+Pinned post
+video/nyro-teaser.mp4 before launch, video/nyro-ca-demo.mp4 on launch day (captions in konten-x/captions.txt)
+
+GitHub (organization nyro-agent)
+Description: AI mining agent: finds rewards on 7 chains and routes them into one USDC payout. Public addresses only. You sign.
+Avatar: ../github-avatar.png
+Repo nyro-agent: Nyro: an AI mining agent (MCP server + web app). Reads mining, staking and node payout wallets on Solana, Ethereum, Base, Arbitrum, Polygon, Kaspa and Bitcoin, prices each move with live LI.FI routes, and plans one USDC payout. You sign every step.
+Topics: mcp ai-agent mining staking depin solana ethereum base arbitrum polygon kaspa bitcoin usdc lifi
+
+Telegram / Discord
+Nyro is an AI mining agent. It reads your payout wallets on Solana, Ethereum, Base, Arbitrum, Polygon, Kaspa and Bitcoin, holds what isn't worth the fees, and routes the rest into one USDC payout. Public addresses only. nyro.run
+
+Colors
+gold #d6aa50 (gradient #f6dc96 → #d6aa50 → #8a6420), N #3a2a0b, background #050505, text #f4f4f4, accent #7b70f0
+Font: Satoshi (fontshare.com)

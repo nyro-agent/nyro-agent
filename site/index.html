@@ -384,7 +384,7 @@
 
     <!-- Seamless loop of the Blender coin ring (transparent). Safari gets HEVC-with-alpha, everyone else VP9-with-alpha. -->
     <video class="coins" id="coins" width="720" height="720" autoplay loop muted playsinline
-           poster="assets/ring-poster.webp" aria-label="Ring of spinning gold coins"></video>
+           poster="assets/ring-poster.webp?v=2" aria-label="Ring of spinning gold coins"></video>
   </div>
 </section>
 
@@ -588,7 +588,7 @@
   if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
     v.removeAttribute("autoplay");          // poster frame only
   } else {
-    v.src = isSafari ? "assets/ring.mov" : "assets/ring.webm";
+    v.src = isSafari ? "assets/ring.mov?v=2" : "assets/ring.webm?v=2";   // v=2: softer highlights, 1200px
   }
 
   // "Open app" / "Open terminal": the engine's web app. Change APP_URL once it is hosted somewhere else.

@@ -140,6 +140,9 @@
     -webkit-user-drag: none;
   }
 
+  /* zoom the ring in a little: fills the space around it; only the video's transparent edge passes the margin */
+  @media (min-width: 901px) { .coins { transform: scale(1.15); transform-origin: 50% 50%; } }
+
   /* phones / small tablets: stack it in normal flow at full size instead of shrinking the whole stage */
   @media (max-width: 900px) {
     .stage { zoom: 1; width: auto; height: auto; padding: 96px 16px 32px; }

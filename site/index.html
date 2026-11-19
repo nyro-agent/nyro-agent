@@ -84,14 +84,14 @@
   /* hero: 1440x820 stage, copy on the left, coin ring on the right (fills the width, stays one screen tall) */
   .stage {
     position: relative;
-    width: 1440px;
+    width: calc(var(--sw, 1440) * 1px);   /* wider than 1440 on wide screens, so copy and coins spread out */
     height: 820px;
     margin: 0 auto;
     zoom: var(--s, 1);
   }
   .copy {
     position: absolute;
-    left: 120px; top: 0; bottom: 0;
+    left: calc(120px + (var(--sw, 1440) - 1440) * .3px); top: 0; bottom: 0;
     width: 650px;
     display: flex;
     flex-direction: column;
@@ -131,7 +131,7 @@
   }
   .coins {
     position: absolute;
-    left: 690px;
+    left: calc(690px + (var(--sw, 1440) - 1440) * .62px);
     top: 50px;
     width: 720px;
     height: 720px;
@@ -228,6 +228,10 @@
   .topbar { position: fixed; inset: 0 0 auto 0; z-index: 50; transition: background-color .25s ease, border-color .25s ease; border-bottom: 1px solid transparent; }
   .topbar.scrolled { background: rgba(5,5,5,.72); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom-color: var(--line); }
   .topbar .wrap { height: 72px; display: flex; align-items: center; gap: 40px; }
+  /* line the top bar up with the hero copy (both edges), however wide the screen */
+  @media (min-width: 901px) {
+    .topbar .wrap { max-width: none; padding: 0 calc(var(--s, 1) * (120px + (var(--sw, 1440) - 1440) * .3px)); }
+  }
   .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
   .brand svg { width: 28px; height: 28px; flex: none; }
   .topbar nav { margin-right: auto; }
@@ -541,10 +545,16 @@
   </div>
 </footer>
 <script>
-  // 1440x820 hero: 1:1 when it fits, otherwise scaled down to fit both width and height (one screen, no scrolling).
+  // 1440x820 hero, scaled to fill one screen: up to 1.5x on big screens, down on small ones (no scrolling).
+  // --sw widens the stage to the window, so wide screens get the copy and coins spread out instead of empty sides.
   // At 900px and below the hero switches to a stacked layout at full size instead.
-  const fit = () => document.documentElement.style.setProperty("--s",
-    innerWidth <= 900 ? 1 : Math.min(1, innerWidth / 1440, innerHeight / 820));
+  const fit = () => {
+    const r = document.documentElement.style;
+    const small = innerWidth <= 900;
+    const s = small ? 1 : Math.min(1.5, innerWidth / 1440, innerHeight / 820);
+    r.setProperty("--s", s);
+    r.setProperty("--sw", small ? 1440 : Math.max(1440, innerWidth / s));
+  };
   fit();
   addEventListener("resize", fit);
 

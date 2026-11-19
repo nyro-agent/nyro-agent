@@ -92,34 +92,35 @@
   .copy {
     position: absolute;
     left: calc(120px + (var(--sw, 1440) - 1440) * .3px); top: 56px; bottom: 0;   /* centred below the top bar */
-    width: 650px;
+    width: calc(650px + var(--g, 0) * 90px);
     display: flex;
     flex-direction: column;
     justify-content: center;
   }
-  .eyebrow { font-size: 16.6px; line-height: 22px; font-weight: 500; color: var(--accent); }
+  /* --g (0..1) grows the copy on wide stages, where there is room beside the coins; 0 keeps the original sizes */
+  .eyebrow { font-size: calc(16.6px + var(--g, 0) * 1.6px); line-height: calc(22px + var(--g, 0) * 2px); font-weight: 500; color: var(--accent); }
   h1 {
-    margin-top: 18px;
-    font-size: 52px;
-    line-height: 60px;
+    margin-top: calc(18px + var(--g, 0) * 4px);
+    font-size: calc(52px + var(--g, 0) * 10px);
+    line-height: calc(60px + var(--g, 0) * 10px);
     font-weight: 700;
     letter-spacing: -0.015em;
     color: var(--text);
     text-wrap: balance;
   }
-  .lede { margin-top: 22px; max-width: 530px; font-size: 16px; line-height: 25px; font-weight: 500; color: var(--body); }
-  .hero-buttons { margin-top: 32px; display: flex; gap: 12px; flex-wrap: wrap; }
-  .chains-label { margin-top: 52px; font-size: 12.5px; line-height: 18px; color: var(--muted); }
-  .chains { margin-top: 14px; display: flex; gap: 24px; list-style: none; }
-  .chain { width: 55px; text-align: center; }
+  .lede { margin-top: calc(22px + var(--g, 0) * 6px); max-width: calc(530px + var(--g, 0) * 70px); font-size: calc(16px + var(--g, 0) * 2px); line-height: calc(25px + var(--g, 0) * 3px); font-weight: 500; color: var(--body); }
+  .hero-buttons { margin-top: calc(32px + var(--g, 0) * 8px); display: flex; gap: 12px; flex-wrap: wrap; zoom: calc(1 + var(--g, 0) * .14); }
+  .chains-label { margin-top: calc(52px + var(--g, 0) * 14px); font-size: calc(12.5px + var(--g, 0) * 1.5px); line-height: calc(18px + var(--g, 0) * 2px); color: var(--muted); }
+  .chains { margin-top: 14px; display: flex; gap: calc(24px + var(--g, 0) * 6px); list-style: none; }
+  .chain { width: calc(55px + var(--g, 0) * 9px); text-align: center; }
   .tile {
-    width: 55px; height: 55px;
+    width: calc(55px + var(--g, 0) * 9px); height: calc(55px + var(--g, 0) * 9px);
     border-radius: 12px;
     background: var(--tile);
     border: 1px solid var(--line);
     display: grid; place-items: center;
   }
-  .tile svg, .tile img { width: 26px; height: 26px; display: block; }
+  .tile svg, .tile img { width: calc(26px + var(--g, 0) * 4px); height: calc(26px + var(--g, 0) * 4px); display: block; }
   .chain span {
     display: block;
     margin-top: 10px;
@@ -563,6 +564,7 @@
     r.setProperty("--cs", cs);
     r.setProperty("--cl", sw - 30 - cs);
     r.setProperty("--ct", (sh - cs) / 2);
+    r.setProperty("--g", small ? 0 : Math.max(0, Math.min(1, (sw - 1300) / 300)));
   };
   fit();
   addEventListener("resize", fit);

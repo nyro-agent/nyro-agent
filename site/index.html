@@ -85,13 +85,13 @@
   .stage {
     position: relative;
     width: calc(var(--sw, 1440) * 1px);   /* wider than 1440 on wide screens, so copy and coins spread out */
-    height: 820px;
+    height: calc(var(--sh, 820) * 1px);   /* taller than 820 on tall screens, so the hero fills the screen */
     margin: 0 auto;
     zoom: var(--s, 1);
   }
   .copy {
     position: absolute;
-    left: calc(120px + (var(--sw, 1440) - 1440) * .3px); top: 0; bottom: 0;
+    left: calc(120px + (var(--sw, 1440) - 1440) * .3px); top: 56px; bottom: 0;   /* centred below the top bar */
     width: 650px;
     display: flex;
     flex-direction: column;
@@ -131,10 +131,10 @@
   }
   .coins {
     position: absolute;
-    left: calc(690px + (var(--sw, 1440) - 1440) * .62px);
-    top: 50px;
-    width: 720px;
-    height: 720px;
+    left: calc(var(--cl, 690) * 1px);
+    top: calc(var(--ct, 50) * 1px);
+    width: calc(var(--cs, 720) * 1px);
+    height: calc(var(--cs, 720) * 1px);
     user-select: none;
     -webkit-user-drag: none;
   }
@@ -551,9 +551,18 @@
   const fit = () => {
     const r = document.documentElement.style;
     const small = innerWidth <= 900;
-    const s = small ? 1 : Math.min(1.5, innerWidth / 1440, innerHeight / 820);
+    // the design can narrow to 1200 (copy and coins move closer) so 3:2 screens scale by height and fill the screen
+    const s = small ? 1 : Math.min(1.5, innerWidth / 1200, innerHeight / 820);
+    const sw = small ? 1440 : Math.max(1200, innerWidth / s);          // stage size in design px
+    const sh = small ? 820 : Math.min(1080, Math.max(820, innerHeight / s));
+    // coin ring: as big as the height allows (720 at 1440x820), right-aligned 30px from the edge, centred vertically
+    const cs = Math.min(sh - 100, 780 + (sw - 1440) * .7);
     r.setProperty("--s", s);
-    r.setProperty("--sw", small ? 1440 : Math.max(1440, innerWidth / s));
+    r.setProperty("--sw", sw);
+    r.setProperty("--sh", sh);
+    r.setProperty("--cs", cs);
+    r.setProperty("--cl", sw - 30 - cs);
+    r.setProperty("--ct", (sh - cs) / 2);
   };
   fit();
   addEventListener("resize", fit);

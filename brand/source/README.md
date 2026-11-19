@@ -6,3 +6,5 @@ Render sources. Put the Satoshi TTFs (fontshare.com, free) in `font/` and the sc
     python3 wordmark.py ../logo                # flat mark + wordmark PNGs
 
 The coin builder comes from superswap-section/blender/coins_ring.py.
+
+    FPS=30 SAMPLES=56 RES=1200 KEY=2.8 KEYL=420 REL_LO=0.2 REL_HI=0.32 OUTDIR=out blender -b -P coins_ring.py -- anim   # hero coin ring (site/assets/ring.*)

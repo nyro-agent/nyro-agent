@@ -91,7 +91,7 @@
   }
   .copy {
     position: absolute;
-    left: calc(120px + (var(--sw, 1440) - 1440) * .3px); top: 56px; bottom: 0;   /* centred below the top bar */
+    left: calc(var(--gx, 120) * 1px); top: 56px; bottom: 0;   /* page margin, in stage units; centred below the top bar */
     width: calc(650px + var(--g, 0) * 90px);
     display: flex;
     flex-direction: column;
@@ -151,7 +151,8 @@
   }
 
   /* ---------- sections below the hero: normal responsive flow ---------- */
-  .wrap { max-width: 1248px; margin: 0 auto; padding: 0 24px; }
+  /* one side margin for the whole page (top bar, hero, every section): --gut, set by the script below */
+  .wrap { max-width: none; margin: 0 auto; padding: 0 var(--gut, 24px); }
   .block { padding: 112px 0; border-top: 1px solid var(--line); }
   .kicker { font-size: 14px; font-weight: 500; color: var(--accent); margin-bottom: 14px; }
   .block h2 { font-size: clamp(30px, 4vw, 40px); line-height: 1.15; font-weight: 700; letter-spacing: -0.015em; max-width: 820px; text-wrap: balance; }
@@ -231,7 +232,7 @@
   .topbar .wrap { height: 72px; display: flex; align-items: center; gap: 40px; }
   /* line the top bar up with the hero copy (both edges), however wide the screen */
   @media (min-width: 901px) {
-    .topbar .wrap { max-width: none; padding: 0 calc(var(--s, 1) * (120px + (var(--sw, 1440) - 1440) * .3px)); }
+    .topbar .wrap { max-width: none; padding: 0 var(--gut, 24px); }
   }
   .brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; white-space: nowrap; }
   .brand svg { width: 28px; height: 28px; flex: none; }
@@ -557,14 +558,23 @@
     const sw = small ? 1440 : Math.max(1200, innerWidth / s);          // stage size in design px
     const sh = small ? 820 : Math.min(1080, Math.max(820, innerHeight / s));
     // coin ring: as big as the height allows (720 at 1440x820), right-aligned 30px from the edge, centred vertically
-    const cs = Math.min(sh - 100, 780 + (sw - 1440) * .7);
+    // page side margin in CSS px: 4.5% of the width (24 to 72), wider only past 1680px of content on huge screens
+    const gut = Math.max(Math.min(72, Math.max(24, innerWidth * .045)), (innerWidth - 1680) / 2);
+    const gx = small ? 120 : gut / s;                                    // the same margin inside the zoomed stage
+    const region = sw - 2 * gx;                                          // room between the margins, stage units
+    const g = small ? 0 : Math.max(0, Math.min(1, (region - 1150) / 300)); // bigger copy only when there is room
+    const copyW = 650 + 90 * g;
+    // coin ring: as big as height allows, never over the copy (its transparent edge may overlap 80)
+    const cs = Math.min(sh - 100, 780 + (sw - 1440) * .7, region - copyW + 80);
+    r.setProperty("--gut", gut + "px");
+    r.setProperty("--gx", gx);
     r.setProperty("--s", s);
     r.setProperty("--sw", sw);
     r.setProperty("--sh", sh);
     r.setProperty("--cs", cs);
-    r.setProperty("--cl", sw - 30 - cs);
+    r.setProperty("--cl", sw - gx - cs);
     r.setProperty("--ct", (sh - cs) / 2);
-    r.setProperty("--g", small ? 0 : Math.max(0, Math.min(1, (sw - 1300) / 300)));
+    r.setProperty("--g", g);
   };
   fit();
   addEventListener("resize", fit);

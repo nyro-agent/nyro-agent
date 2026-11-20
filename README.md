@@ -1,5 +1,7 @@
 # NYRO · AI mining agent
 
+[nyro.run](https://nyro.run) · [X @nyroagent](https://x.com/nyroagent) · [npm](https://www.npmjs.com/package/nyro-agent)
+
 Nyro watches your mining, staking, node and farm payout wallets on **Solana, Ethereum, Base, Arbitrum, Polygon,
 Kaspa and Bitcoin**, shows what came in, prices what it would cost to move each reward (live **LI.FI** routes:
 gas + bridge + swap fees), holds what is not worth it, and plans the rest into **USDC** on one chain and on to your

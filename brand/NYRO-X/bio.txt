@@ -22,6 +22,9 @@ Every chain
 Website
 nyro.run
 
+Handle
+@nyroagent (x.com/nyroagent)
+
 Avatar
 logo-profile-1000.jpg
 

@@ -645,7 +645,7 @@
     el("caText").title = t.ca;
     el("buyLink").href = t.buy;
     el("buyLink").textContent = "Buy $" + t.symbol + " on Pons";
-    const burned = Math.round(Number(t.deadBalance || 0));
+    const burned = Math.floor(Number(t.deadBalance || 0));
     if (burned > 0) { el("burned").textContent = "🔥 " + burned.toLocaleString("en-US") + " $" + t.symbol + " burned"; el("burned").hidden = false; }
     el("copyCa").onclick = async () => {
       try { await navigator.clipboard.writeText(t.ca); } catch { return; }

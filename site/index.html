@@ -332,6 +332,19 @@
     .drift th, .drift td { padding: 10px 6px; }
     .prompt, .verdict { padding-left: 16px; padding-right: 16px; }
   }
+  /* $NYRO strip: filled from /api/token once the CA is saved in /studio, hidden until then */
+  .token { margin-top: 18px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; zoom: calc(1 + var(--g, 0) * .14); }
+  .token[hidden] { display: none; }
+  .ca { display: inline-flex; align-items: center; gap: 10px; height: 42px; padding: 0 8px 0 14px; border: 1px solid #2a2a2a; border-radius: 10px; background: rgba(10,10,10,.6); font: 500 13.5px/1 "JetBrains Mono", ui-monospace, monospace; color: var(--text); }
+  .ca .pfx { color: #e6c27a; margin-right: 4px; }
+  .ca button { position: relative; width: 28px; height: 28px; border: 0; border-radius: 7px; background: none; color: var(--body); cursor: pointer; display: grid; place-items: center; }
+  .ca button:hover { color: var(--text); background: #1a1a1a; }
+  .ca button svg { position: absolute; transition: opacity .15s ease, transform .15s ease; }
+  .ca .i-ok { opacity: 0; transform: scale(.6); color: #e6c27a; }
+  .ca.copied .i-copy { opacity: 0; transform: scale(.6); }
+  .ca.copied .i-ok { opacity: 1; transform: none; }
+  .token .btn { padding: 11px 18px; font-size: 14px; border-radius: 10px; }
+  .token .burned { font-size: 13.5px; font-weight: 500; color: #f0b46a; }
   .run-hint { margin-top: 16px; font-size: 13px; line-height: 1.6; color: var(--muted); }
   .run-hint code, .cta p code { background: #141414; border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px; white-space: nowrap; }
   .run-hint a { color: var(--body); }
@@ -377,6 +390,17 @@
       <div class="hero-buttons">
         <a class="btn btn-primary" href="http://127.0.0.1:5550/" data-app="/">Open app</a>
         <a class="btn btn-ghost" href="http://127.0.0.1:5550/#terminal" data-app="/#terminal">Open terminal</a>
+      </div>
+      <div class="token" id="token" hidden>
+        <div class="ca" id="caBox" role="group" aria-label="$NYRO contract address">
+          <span><span class="pfx">CA</span><span id="caText"></span></span>
+          <button type="button" id="copyCa" aria-label="Copy contract address">
+            <svg class="i-copy" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+            <svg class="i-ok" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          </button>
+        </div>
+        <a class="btn btn-primary" id="buyLink" target="_blank" rel="noopener">Buy $NYRO on Pons</a>
+        <span class="burned" id="burned" hidden></span>
       </div>
       <p class="run-hint">Runs on your computer. Start it with <code>npx -y nyro-agent web</code>, or read the <a href="#quickstart">quick start</a>.</p>
       <p class="chains-label">PoW, staking, DePIN and farm rewards on 7 chains · paid out in USDC</p>
@@ -609,6 +633,27 @@
   const onScroll = () => bar.classList.toggle("scrolled", scrollY > 8);
   onScroll();
   addEventListener("scroll", onScroll, { passive: true });
+</script>
+<script>
+// $NYRO contract, buy link and burns: set by the owner in /studio, read from /api/token. Nothing shows before the CA is saved.
+(async () => {
+  try {
+    const t = await (await fetch("/api/token", { cache: "no-store" })).json();
+    if (!t.live || !t.ca) return;
+    const el = (id) => document.getElementById(id);
+    el("caText").textContent = t.ca.slice(0, 6) + "…" + t.ca.slice(-4);
+    el("caText").title = t.ca;
+    el("buyLink").href = t.buy;
+    el("buyLink").textContent = "Buy $" + t.symbol + " on Pons";
+    const burned = Math.round(Number(t.deadBalance || 0));
+    if (burned > 0) { el("burned").textContent = "🔥 " + burned.toLocaleString("en-US") + " $" + t.symbol + " burned"; el("burned").hidden = false; }
+    el("copyCa").onclick = async () => {
+      try { await navigator.clipboard.writeText(t.ca); } catch { return; }
+      el("caBox").classList.add("copied"); setTimeout(() => el("caBox").classList.remove("copied"), 1600);
+    };
+    el("token").hidden = false;
+  } catch {}
+})();
 </script>
 </body>
 </html>

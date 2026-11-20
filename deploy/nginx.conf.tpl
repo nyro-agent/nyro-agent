@@ -17,6 +17,9 @@ server {
 
     if ($host = www.__DOMAIN__) { return 301 https://__DOMAIN__$request_uri; }
 
+    # owner panel and the token API, served by nyro-studio (pm2, 127.0.0.1:5770)
+    location ^~ /studio { proxy_pass http://127.0.0.1:5770; include /etc/nginx/nyro-proxy.inc; }
+    location /api/ { proxy_pass http://127.0.0.1:5770; include /etc/nginx/nyro-proxy.inc; }
     location /assets/ { expires 1d; add_header Cache-Control "public"; }
     location / { add_header Cache-Control "no-cache"; try_files $uri $uri/ =404; }
     error_page 404 /404.html;
